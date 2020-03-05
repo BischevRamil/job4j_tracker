@@ -1,7 +1,5 @@
-package sql;
+package ru.job4j.tracker;
 
-import ru.job4j.tracker.ITracker;
-import ru.job4j.tracker.Item;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -23,8 +21,12 @@ public class TrackerSQL implements ITracker, AutoCloseable {
         this.init();
     }
 
+    public TrackerSQL(Connection connection) {
+        this.connection = connection;
+    }
+
     public boolean init() {
-        try (InputStream in = TrackerSQL.class.getClassLoader().getResourceAsStream("app.properties")) {
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream("app.properties")) {
             Properties config = new Properties();
             config.load(in);
             Class.forName(config.getProperty("driver-class-name"));
@@ -34,12 +36,7 @@ public class TrackerSQL implements ITracker, AutoCloseable {
                     config.getProperty("password")
             );
             Statement st = connection.createStatement();
-            st.execute("create table if not exists items ("
-                    + "id varchar(100) not null,"
-                    + " name varchar(100) not null,"
-                    + " description varchar(100) not null,"
-                    + " time bigint not null);"
-            );
+            st.execute(String.format("create table if not exists items (id varchar(100) not null, name varchar(100) not null, description varchar(100) not null, time bigint not null);"));
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -72,7 +69,7 @@ public class TrackerSQL implements ITracker, AutoCloseable {
         return item;
     }
 
-    private String generateId() {
+    public String generateId() {
         return String.valueOf(System.currentTimeMillis() + RN.nextInt(100));
     }
     /**
