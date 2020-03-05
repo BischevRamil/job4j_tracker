@@ -9,12 +9,12 @@ public class Tracker implements ITracker {
     private static final Random RN = new Random();
 
     public Item add(Item item) {
-        item.setId(this.generateId());
+        item.setId(generateId());
         this.items.add(item);
         return item;
     }
 
-    private String generateId() {
+    public static String generateId() {
         return String.valueOf(System.currentTimeMillis() + RN.nextInt(100));
     }
 

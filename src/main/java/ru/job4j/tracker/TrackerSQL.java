@@ -55,23 +55,18 @@ public class TrackerSQL implements ITracker, AutoCloseable {
      */
     @Override
     public Item add(Item item) {
-        item.setId(this.generateId());
         try (PreparedStatement statement = connection.prepareStatement(SQLItems.INSERT.query)) {
             statement.setString(1, item.getId());
             statement.setString(2, item.getName());
             statement.setString(3, item.getDesc());
             statement.setLong(4, item.getTime());
             statement.execute();
-
         } catch (SQLException e) {
                 e.printStackTrace();
         }
         return item;
     }
 
-    public String generateId() {
-        return String.valueOf(System.currentTimeMillis() + RN.nextInt(100));
-    }
     /**
      * Замена заявки по id
      * @param id id
@@ -81,7 +76,6 @@ public class TrackerSQL implements ITracker, AutoCloseable {
     @Override
     public boolean replace(String id, Item item) {
         boolean result = false;
-
         try (PreparedStatement statement = connection.prepareStatement(SQLItems.UPDATE.query)) {
             statement.setString(1, item.getName());
             statement.setString(2, item.getDesc());
@@ -101,7 +95,6 @@ public class TrackerSQL implements ITracker, AutoCloseable {
     @Override
     public boolean delete(String id) {
         boolean result = false;
-
         try (PreparedStatement statement = connection.prepareStatement(SQLItems.DELETE.query)) {
             statement.setString(1, id);
             result = statement.executeQuery().next();
@@ -139,7 +132,6 @@ public class TrackerSQL implements ITracker, AutoCloseable {
      */
     @Override
     public ArrayList<Item> findByName(String key) {
-
         ArrayList<Item> result = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement(SQLItems.GETFROMNAME.query)) {
             statement.setString(1, key);
@@ -175,23 +167,6 @@ public class TrackerSQL implements ITracker, AutoCloseable {
     }
 
     /**
-     *
-     * Удаление таблицы
-     * @param tableName имя таблицы
-     * @return true если запрос выполнен.
-     */
-    public boolean clearTable(String tableName) {
-        Boolean result = false;
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("DELETE FROM " + tableName + ";");
-            result = true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    /**
      * SQL queries for items table.
      */
     enum SQLItems {
@@ -202,12 +177,10 @@ public class TrackerSQL implements ITracker, AutoCloseable {
         DELETE("DELETE FROM items WHERE id = ? RETURNING id;"),
         UPDATE("UPDATE items SET name = ?, description = ? WHERE id = ?;");
 
-
         String query;
 
         SQLItems(String query) {
             this.query = query;
         }
     }
-
 }
