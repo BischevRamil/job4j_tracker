@@ -43,6 +43,6 @@ public class StartUI {
      * @param args
      */
     public static void main(String[] args) {
-        new StartUI(new ValidateInput(new ConsoleInput()), new Tracker(), System.out::println).init();
+        new StartUI(new ValidateInput(new ConsoleInput()), new TrackerSQL(), System.out::println).init();
     }
 }

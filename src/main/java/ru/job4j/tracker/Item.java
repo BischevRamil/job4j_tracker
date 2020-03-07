@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Item {
 
-    private String id;
+    private long id;
     private String name;
     private String desc;
     private long time;
@@ -15,11 +15,11 @@ public class Item {
         this.time = 123L;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -56,7 +56,7 @@ public class Item {
             return false;
         }
         Item item = (Item) o;
-        return time == item.time && Objects.equals(id, item.id) && Objects.equals(name, item.name) && Objects.equals(desc, item.desc);
+        return time == item.time && id == item.id && Objects.equals(name, item.name) && Objects.equals(desc, item.desc);
     }
 
     @Override

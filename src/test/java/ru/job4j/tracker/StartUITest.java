@@ -53,27 +53,27 @@ public class StartUITest {
     @Test
     public void whenUpdateThenTrackerHasUpdatedValue() {
         Tracker tracker = new Tracker();                // создаём Tracker
-        Item item = tracker.add(new Item("test name", "desc"));             //Напрямую добавляем заявку
-        Input input = new StubInput(new String[]{"2", item.getId(), "test replace", "заменили заявку", "y"});    //создаём StubInput с последовательностью действий(производим замену заявки)
+        long itemId = tracker.add(new Item("test name", "desc"));             //Напрямую добавляем заявку
+        Input input = new StubInput(new String[]{"2", String.valueOf(itemId), "test replace", "заменили заявку", "y"});    //создаём StubInput с последовательностью действий(производим замену заявки)
         new StartUI(input, tracker, output).init();         // создаём StartUI и вызываем метод init()
-        assertThat(tracker.findById(item.getId()).getName(), is("test replace"));        // проверяем, что нулевой элемент массива в трекере содержит имя, введённое при эмуляции.
+        assertThat(tracker.findById(itemId).getName(), is("test replace"));        // проверяем, что нулевой элемент массива в трекере содержит имя, введённое при эмуляции.
     }
 
     @Test
     public void whenDeleteThenTrackerNotHasValue() {
         Tracker tracker = new Tracker();
-        Item item = tracker.add(new Item("test name", "desc"));
-        Input input = new StubInput(new String[]{"3", item.getId(), "y"});
+        long itemId = tracker.add(new Item("test name", "desc"));
+        Input input = new StubInput(new String[]{"3", String.valueOf(itemId), "y"});
         new StartUI(input, tracker, output).init();
-        assertThat(tracker.delete(item.getId()), is(false));
+        assertThat(tracker.delete(itemId), is(false));
     }
 
     @Test
     public void whenFindAllThenTrackerShowAll() {
         Tracker tracker = new Tracker();
-        Item item1 = tracker.add(new Item("test name1", "desc1"));
-        Item item2 = tracker.add(new Item("test name2", "desc2"));
-        Item item3 = tracker.add(new Item("test name3", "desc3"));
+        long item1 = tracker.add(new Item("test name1", "desc1"));
+        long item2 = tracker.add(new Item("test name2", "desc2"));
+        long item3 = tracker.add(new Item("test name3", "desc3"));
         Input input = new StubInput(new String[]{"1", "y"});
         new StartUI(input, tracker, output).init();
         assertThat(
@@ -82,9 +82,9 @@ public class StartUITest {
                         new StringBuilder()
                                 .append(menu)
                                 .append("-----------------Показать все заявки:---------------------\n")
-                                .append(item1.getId() + " test name1 desc1\n")
-                                .append(item2.getId() + " test name2 desc2\n")
-                                .append(item3.getId() + " test name3 desc3\n")
+                                .append(item1 + " test name1 desc1\n")
+                                .append(item2 + " test name2 desc2\n")
+                                .append(item3 + " test name3 desc3\n")
                                 .toString()
                 )
         );
@@ -93,10 +93,10 @@ public class StartUITest {
     @Test
     public void whenFindByIDThenTrackerItem() {
         Tracker tracker = new Tracker();
-        Item item1 = tracker.add(new Item("test name1", "desc1"));
-        Item item2 = tracker.add(new Item("test name2", "desc2"));
-        Item item3 = tracker.add(new Item("test name3", "desc3"));
-        Input input = new StubInput(new String[]{"4", item1.getId(), "y"});
+        long item1 = tracker.add(new Item("test name1", "desc1"));
+        long item2 = tracker.add(new Item("test name2", "desc2"));
+        long item3 = tracker.add(new Item("test name3", "desc3"));
+        Input input = new StubInput(new String[]{"4", String.valueOf(item1), "y"});
         new StartUI(input, tracker, output).init();
         assertThat(
                 new String(out.toByteArray()),
@@ -104,7 +104,7 @@ public class StartUITest {
                         new StringBuilder()
                                 .append(menu)
                                 .append("---------------------Поиск заявки по ID------------------------------------\n")
-                                .append(item1.getId() + " test name1 desc1\n")
+                                .append(item1 + " test name1 desc1\n")
                                 .toString()
                 )
         );
@@ -113,9 +113,9 @@ public class StartUITest {
     @Test
     public void whenFindByNameThenTrackerItem() {
         Tracker tracker = new Tracker();
-        Item item1 = tracker.add(new Item("test name1", "desc1"));
-        Item item2 = tracker.add(new Item("test name3", "desc2"));
-        Item item3 = tracker.add(new Item("test name3", "desc3"));
+        long item1 = tracker.add(new Item("test name1", "desc1"));
+        long item2 = tracker.add(new Item("test name3", "desc2"));
+        long item3 = tracker.add(new Item("test name3", "desc3"));
         Input input = new StubInput(new String[]{"5", "test name3", "y"});
         new StartUI(input, tracker, output).init();
         assertThat(
@@ -124,8 +124,8 @@ public class StartUITest {
                         new StringBuilder()
                                 .append(menu)
                                 .append("---------------------Поиск заявок по имени-----------------------------------\n")
-                                .append(item2.getId() + " test name3 desc2\n")
-                                .append(item3.getId() + " test name3 desc3\n")
+                                .append(item2 + " test name3 desc2\n")
+                                .append(item3 + " test name3 desc3\n")
                                 .toString()
                 )
         );

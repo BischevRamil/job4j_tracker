@@ -8,19 +8,19 @@ public class Tracker implements ITracker {
     private final List<Item> items = new ArrayList<>();
     private static final Random RN = new Random();
 
-    public Item add(Item item) {
+    public long add(Item item) {
         item.setId(generateId());
         this.items.add(item);
-        return item;
+        return item.getId();
     }
 
-    public static String generateId() {
-        return String.valueOf(System.currentTimeMillis() + RN.nextInt(100));
+    private static long generateId() {
+        return System.currentTimeMillis() + RN.nextInt(100);
     }
 
-    public boolean replace(String id, Item item) {
+    public boolean replace(long id, Item item) {
             for (int i = 0; i < items.size(); i++) {
-                if (this.items.get(i).getId().equals(id)) {
+                if (this.items.get(i).getId() == (id)) {
                     item.setId(id);
                     this.items.set(i, item);
                     return true;
@@ -29,11 +29,11 @@ public class Tracker implements ITracker {
         return false;
     }
 
-    public boolean delete(String id) {
+    public boolean delete(long id) {
         Iterator<Item> itemIterator = items.iterator();
         while (itemIterator.hasNext()) {
             Item nextItem = itemIterator.next();
-            if (nextItem.getId().equals(id)) {
+            if (nextItem.getId() == id) {
                 itemIterator.remove();
                 return true;
             }
@@ -55,9 +55,9 @@ public class Tracker implements ITracker {
         return tmp;
     }
 
-    public Item findById(String id) {
+    public Item findById(long id) {
         for (Item item : items) {
-            if (item.getId().equals(id)) {
+            if (item.getId() == id) {
                 return item;
             }
         }

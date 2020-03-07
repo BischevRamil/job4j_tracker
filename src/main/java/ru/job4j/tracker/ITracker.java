@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface ITracker {
-    Item add(Item item);
-    boolean replace(String id, Item item);
-    boolean delete(String id);
+    long add(Item item);
+    boolean replace(long id, Item item);
+    boolean delete(long id);
     List findAll();
     ArrayList findByName(String key);
-    Item findById(String id);
+    Item findById(long id);
 }

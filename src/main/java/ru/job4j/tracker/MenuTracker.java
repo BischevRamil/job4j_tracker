@@ -85,7 +85,6 @@ public class MenuTracker {
             String desc = input.ask("Введите описание заявки :");
             Item item = new Item(name, desc);
             tracker.add(item);
-            output.accept("------------ Новая заявка с ID : " + item.getId());
             output.accept("------------ Новая заявка с именем : " + item.getName());
             output.accept("------------ Новая заявка с описанием : " + item.getDesc());
         }
@@ -115,7 +114,7 @@ public class MenuTracker {
         @Override
         public void execute(Input input, ITracker tracker) {
             output.accept("-------------------Редактирование заявки------------------------------");
-            String id = input.ask("Введите ID заявки :");
+            long id = Long.parseLong(input.ask("Введите ID заявки :"));
             String name = input.ask("Введите новое имя заявки :");
             String desc = input.ask("Введите новое описание заявки :");
             Item item = new Item(name, desc);
@@ -136,7 +135,7 @@ public class MenuTracker {
         @Override
         public void execute(Input input, ITracker tracker) {
             output.accept("---------------------Удаление заявки------------------------------------");
-            String id = input.ask("Введите ID заявки которую нужно удалить :");
+            long id = Long.parseLong(input.ask("Введите ID заявки которую нужно удалить :"));
             boolean rsl = tracker.delete(id);
             if (rsl) {
                 output.accept("-----------------Заявка с ID :" + id + "удалена--------------------");
@@ -154,7 +153,7 @@ public class MenuTracker {
         @Override
         public void execute(Input input, ITracker tracker) {
             output.accept("---------------------Поиск заявки по ID------------------------------------");
-            String id = input.ask("Введите ID заявки, которую нужно найти");
+            long id = Long.parseLong(input.ask("Введите ID заявки, которую нужно найти"));
             Item item = tracker.findById(id);
             if (item != null) {
                 output.accept(item.getId() + " " + item.getName() + " " + item.getDesc());

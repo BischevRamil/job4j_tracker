@@ -36,7 +36,7 @@ public class TrackerSQL implements ITracker, AutoCloseable {
                     config.getProperty("password")
             );
             Statement st = connection.createStatement();
-            st.execute(String.format("create table if not exists items (id varchar(100) not null, name varchar(100) not null, description varchar(100) not null, time bigint not null);"));
+            st.execute(String.format("create table if not exists items (id serial primary key, name varchar(100) not null, description varchar(100) not null, time bigint not null);"));
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -54,17 +54,19 @@ public class TrackerSQL implements ITracker, AutoCloseable {
      * @return заявка
      */
     @Override
-    public Item add(Item item) {
+    public long add(Item item) {
+        long id = 0;
         try (PreparedStatement statement = connection.prepareStatement(SQLItems.INSERT.query)) {
-            statement.setString(1, item.getId());
-            statement.setString(2, item.getName());
-            statement.setString(3, item.getDesc());
-            statement.setLong(4, item.getTime());
-            statement.execute();
+            statement.setString(1, item.getName());
+            statement.setString(2, item.getDesc());
+            statement.setLong(3, item.getTime());
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            id = rs.getLong("id");
         } catch (SQLException e) {
                 e.printStackTrace();
         }
-        return item;
+        return id;
     }
 
     /**
@@ -74,12 +76,12 @@ public class TrackerSQL implements ITracker, AutoCloseable {
      * @return true если есть такой id.
      */
     @Override
-    public boolean replace(String id, Item item) {
+    public boolean replace(long id, Item item) {
         boolean result = false;
         try (PreparedStatement statement = connection.prepareStatement(SQLItems.UPDATE.query)) {
             statement.setString(1, item.getName());
             statement.setString(2, item.getDesc());
-            statement.setString(3, id);
+            statement.setLong(3, id);
             result = statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -93,10 +95,10 @@ public class TrackerSQL implements ITracker, AutoCloseable {
      * @return true если есть такой id.
      */
     @Override
-    public boolean delete(String id) {
+    public boolean delete(long id) {
         boolean result = false;
         try (PreparedStatement statement = connection.prepareStatement(SQLItems.DELETE.query)) {
-            statement.setString(1, id);
+            statement.setLong(1, id);
             result = statement.executeQuery().next();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -115,7 +117,7 @@ public class TrackerSQL implements ITracker, AutoCloseable {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 Item item = new Item(rs.getString("name"), rs.getString("description"));
-                item.setId(rs.getString("id"));
+                item.setId(rs.getLong("id"));
                 item.setTime(rs.getLong("time"));
                 result.add(item);
             }
@@ -138,7 +140,7 @@ public class TrackerSQL implements ITracker, AutoCloseable {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 Item item = new Item(rs.getString("name"), rs.getString("description"));
-                item.setId(rs.getString("id"));
+                item.setId(rs.getLong("id"));
                 item.setTime(rs.getLong("time"));
                 result.add(item);
             }
@@ -149,14 +151,14 @@ public class TrackerSQL implements ITracker, AutoCloseable {
     }
 
     @Override
-    public Item findById(String id) {
+    public Item findById(long id) {
         Item item = null;
         try (PreparedStatement statement = connection.prepareStatement(SQLItems.GETFROMID.query)) {
-            statement.setString(1, id);
+            statement.setLong(1, id);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 item = new Item(rs.getString("name"), rs.getString("description"));
-                item.setId(rs.getString("id"));
+                item.setId(rs.getLong("id"));
                 item.setTime(rs.getLong("time"));
                 return item;
             }
@@ -173,7 +175,7 @@ public class TrackerSQL implements ITracker, AutoCloseable {
         GETALL("SELECT * FROM items;"),
         GETFROMNAME("SELECT * FROM items WHERE name=?;"),
         GETFROMID("SELECT * FROM items WHERE id=?;"),
-        INSERT("INSERT INTO items (id, name, description, time) VALUES (?, ?, ?, ?);"),
+        INSERT("INSERT INTO items (name, description, time) VALUES (?, ?, ?) RETURNING id;"),
         DELETE("DELETE FROM items WHERE id = ? RETURNING id;"),
         UPDATE("UPDATE items SET name = ?, description = ? WHERE id = ?;");
 

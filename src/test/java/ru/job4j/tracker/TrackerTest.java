@@ -58,7 +58,7 @@ public class TrackerTest {
         tracker.add(second);
         Item third = new Item("test3", "Desc3");
         tracker.add(third);
-        Boolean result = tracker.delete("string");
+        Boolean result = tracker.delete(587L);
         assertThat(result, is(false));
     }
 
